@@ -1,11 +1,29 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import numpy as np
 from model import load_model
 from features import FEATURES
 
 app = FastAPI(title="Churn Predictor API - DummyJSON E-commerce")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 model = load_model()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/")
+def root():
+    return FileResponse("static/index.html")
+
 
 class UserFeatures(BaseModel):
     spend_per_cart:       float

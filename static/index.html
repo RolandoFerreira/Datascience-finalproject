@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Churn Predictor — DummyJSON E-commerce</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0e1117;
+      --surface:   #161b27;
+      --border:    #252d40;
+      --muted:     #3a445c;
+      --text:      #c9d1e8;
+      --dim:       #6b7898;
+      --accent:    #4e9fff;
+      --green:     #3dffa0;
+      --red:       #ff5c72;
+      --yellow:    #ffd166;
+      --mono:      'IBM Plex Mono', monospace;
+      --sans:      'IBM Plex Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-mark {
+      width: 36px; height: 36px;
+      border: 2px solid var(--accent);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 13px; font-weight: 600;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    header h1 {
+      font-size: 15px; font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+    header p {
+      font-size: 12px; color: var(--dim);
+      font-family: var(--mono);
+      margin-top: 2px;
+    }
+
+    /* ── Layout ── */
+    main {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 0;
+      flex: 1;
+      height: calc(100vh - 77px);
+      overflow: hidden;
+    }
+
+    /* ── Left panel: form ── */
+    .form-panel {
+      padding: 32px;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--dim);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .endpoint-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 28px;
+    }
+    .method-badge {
+      font-family: var(--mono);
+      font-size: 11px; font-weight: 600;
+      background: var(--accent);
+      color: var(--bg);
+      padding: 2px 8px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .base-url-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+    }
+    .base-url-input::placeholder { color: var(--muted); }
+
+    /* fields grid */
+    .fields-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field-group label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dim);
+    }
+    .field-group input[type="number"] {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+    .field-group input[type="number"]:focus {
+      border-color: var(--accent);
+    }
+
+    .field-group.flag label { color: var(--dim); margin-bottom: 2px; }
+    .toggle-row {
+      display: flex;
+      gap: 8px;
+    }
+    .toggle-btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .toggle-btn.active-0 {
+      background: color-mix(in srgb, var(--green) 12%, transparent);
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .toggle-btn.active-1 {
+      background: color-mix(in srgb, var(--red) 12%, transparent);
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .flags-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    /* Actions */
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .btn-predict {
+      flex: 1;
+      padding: 12px 20px;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      letter-spacing: 0.05em;
+    }
+    .btn-predict:hover { opacity: 0.88; }
+    .btn-predict:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-reset {
+      padding: 12px 16px;
+      background: transparent;
+      color: var(--dim);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-reset:hover { color: var(--text); border-color: var(--muted); }
+
+    /* Quick-fill presets */
+    .presets-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .preset-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--dim);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Right panel: result + request ── */
+    .result-panel {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .result-hero {
+      flex-shrink: 0;
+      padding: 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+      position: relative;
+      overflow: hidden;
+    }
+    .result-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(78,159,255,0.06), transparent 70%);
+      pointer-events: none;
+    }
+
+    .result-idle {
+      text-align: center;
+      color: var(--muted);
+    }
+    .result-idle .big-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+    .result-idle p { font-size: 13px; font-family: var(--mono); }
+
+    .result-verdict {
+      display: none;
+      text-align: center;
+    }
+    .verdict-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 8px;
+    }
+    .verdict-value {
+      font-family: var(--mono);
+      font-size: 42px;
+      font-weight: 600;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .verdict-value.churn { color: var(--red); }
+    .verdict-value.retain { color: var(--green); }
+
+    .prob-bar-wrap {
+      width: 200px;
+      margin: 0 auto 8px;
+    }
+    .prob-bar-bg {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .prob-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .prob-bar-fill.churn { background: var(--red); }
+    .prob-bar-fill.retain { background: var(--green); }
+    .prob-pct {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--dim);
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    .tabs {
+      flex-shrink: 0;
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      flex: 1;
+      padding: 11px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--dim);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .tab-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    pre.code-block {
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .json-key   { color: var(--accent); }
+    .json-str   { color: var(--green); }
+    .json-num   { color: var(--yellow); }
+    .json-bool  { color: #c792ea; }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--muted);
+    }
+    .status-dot.ok { background: var(--green); }
+    .status-dot.err { background: var(--red); }
+    .status-text {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dim);
+    }
+
+    .error-box {
+      background: color-mix(in srgb, var(--red) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--red) 30%, transparent);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--red);
+    }
+
+    /* Loading spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @media (max-width: 768px) {
+      main { grid-template-columns: 1fr; height: auto; overflow: visible; }
+      .result-panel { border-left: none; border-top: 1px solid var(--border); }
+      .form-panel { height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Churn Predictor</h1>
+    <p>DummyJSON E-commerce · FastAPI · /predict</p>
+  </div>
+</header>
+
+<main>
+  <!-- ── Left: form ── -->
+  <div class="form-panel">
+
+    <div class="section-label">Endpoint</div>
+    <div class="endpoint-bar">
+      <span class="method-badge">POST</span>
+      <input class="base-url-input" id="baseUrl" type="text" value="http://localhost:8000" placeholder="http://localhost:8000" />
+      <span style="font-family:var(--mono);font-size:12px;color:var(--dim);flex-shrink:0">/predict</span>
+    </div>
+
+    <div class="section-label">Numeric Features</div>
+    <div class="fields-grid">
+      <div class="field-group">
+        <label>spend_per_cart</label>
+        <input type="number" id="spend_per_cart" value="45.0" step="0.1" />
+      </div>
+      <div class="field-group">
+        <label>items_per_cart</label>
+        <input type="number" id="items_per_cart" value="2.5" step="0.1" />
+      </div>
+      <div class="field-group">
+        <label>quantity_per_item</label>
+        <input type="number" id="quantity_per_item" value="1.2" step="0.1" />
+      </div>
+      <div class="field-group">
+        <label>avg_items_per_cart</label>
+        <input type="number" id="avg_items_per_cart" value="2.5" step="0.1" />
+      </div>
+      <div class="field-group">
+        <label>cart_frequency_score</label>
+        <input type="number" id="cart_frequency_score" value="0.3" step="0.01" />
+      </div>
+      <div class="field-group">
+        <label>engagement_trend</label>
+        <input type="number" id="engagement_trend" value="1.2" step="0.1" />
+      </div>
+    </div>
+
+    <div class="section-label">Binary Flags</div>
+    <div class="flags-grid">
+      <div class="field-group flag">
+        <label>is_low_spender</label>
+        <div class="toggle-row" data-field="is_low_spender">
+          <button class="toggle-btn active-0" data-val="0">0 · No</button>
+          <button class="toggle-btn" data-val="1">1 · Yes</button>
+        </div>
+      </div>
+      <div class="field-group flag">
+        <label>is_one_time_buyer</label>
+        <div class="toggle-row" data-field="is_one_time_buyer">
+          <button class="toggle-btn active-0" data-val="0">0 · No</button>
+          <button class="toggle-btn" data-val="1">1 · Yes</button>
+        </div>
+      </div>
+      <div class="field-group flag">
+        <label>is_senior (age ≥ 55)</label>
+        <div class="toggle-row" data-field="is_senior">
+          <button class="toggle-btn active-0" data-val="0">0 · No</button>
+          <button class="toggle-btn" data-val="1">1 · Yes</button>
+        </div>
+      </div>
+      <div class="field-group flag">
+        <label>is_young (age ≤ 25)</label>
+        <div class="toggle-row" data-field="is_young">
+          <button class="toggle-btn active-0" data-val="0">0 · No</button>
+          <button class="toggle-btn" data-val="1">1 · Yes</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-predict" id="predictBtn" onclick="runPredict()">▶ Run Predict</button>
+      <button class="btn-reset" onclick="resetForm()">Reset</button>
+    </div>
+
+    <div class="section-label">Quick Fill</div>
+    <div class="presets-row">
+      <button class="preset-btn" onclick="loadPreset('likely_retain')">Likely to Retain</button>
+      <button class="preset-btn" onclick="loadPreset('at_risk')">At Risk</button>
+      <button class="preset-btn" onclick="loadPreset('one_time')">One-time Buyer</button>
+      <button class="preset-btn" onclick="loadPreset('high_value')">High Value</button>
+    </div>
+
+  </div>
+
+  <!-- ── Right: result ── -->
+  <div class="result-panel">
+
+    <div class="result-hero">
+      <div class="result-idle" id="resultIdle">
+        <div class="big-icon">⬡</div>
+        <p>Fill in features and run predict</p>
+      </div>
+      <div class="result-verdict" id="resultVerdict">
+        <div class="verdict-label">Prediction</div>
+        <div class="verdict-value" id="verdictValue">—</div>
+        <div class="prob-bar-wrap">
+          <div class="prob-bar-bg">
+            <div class="prob-bar-fill" id="probBarFill" style="width:0%"></div>
+          </div>
+          <div class="prob-pct" id="probPct"></div>
+        </div>
+      </div>
+      <div id="resultLoading" style="display:none;text-align:center">
+        <div class="spinner"></div>
+        <p style="font-family:var(--mono);font-size:12px;color:var(--dim)">Calling API…</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('response')">Response</div>
+      <div class="tab" onclick="switchTab('request')">Request Body</div>
+      <div class="tab" onclick="switchTab('curl')">cURL</div>
+    </div>
+
+    <div class="tab-content">
+
+      <div class="tab-pane active" id="tab-response">
+        <div class="status-row">
+          <div class="status-dot" id="statusDot"></div>
+          <span class="status-text" id="statusText">No request sent yet</span>
+        </div>
+        <pre class="code-block" id="responseBody">{ }</pre>
+      </div>
+
+      <div class="tab-pane" id="tab-request">
+        <pre class="code-block" id="requestBodyView">{ }</pre>
+      </div>
+
+      <div class="tab-pane" id="tab-curl">
+        <pre class="code-block" id="curlView">—</pre>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+  // ── State ──
+  const flags = { is_low_spender: 0, is_one_time_buyer: 0, is_senior: 0, is_young: 0 };
+
+  // Toggle buttons
+  document.querySelectorAll('.toggle-row').forEach(row => {
+    row.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const field = row.dataset.field;
+        const val = parseInt(btn.dataset.val);
+        flags[field] = val;
+        row.querySelectorAll('.toggle-btn').forEach(b => {
+          b.className = 'toggle-btn';
+        });
+        btn.className = `toggle-btn active-${val}`;
+      });
+    });
+  });
+
+  function getPayload() {
+    return {
+      spend_per_cart:        parseFloat(document.getElementById('spend_per_cart').value) || 0,
+      items_per_cart:        parseFloat(document.getElementById('items_per_cart').value) || 0,
+      quantity_per_item:     parseFloat(document.getElementById('quantity_per_item').value) || 0,
+      avg_items_per_cart:    parseFloat(document.getElementById('avg_items_per_cart').value) || 0,
+      cart_frequency_score:  parseFloat(document.getElementById('cart_frequency_score').value) || 0,
+      engagement_trend:      parseFloat(document.getElementById('engagement_trend').value) || 0,
+      is_low_spender:        flags.is_low_spender,
+      is_one_time_buyer:     flags.is_one_time_buyer,
+      is_senior:             flags.is_senior,
+      is_young:              flags.is_young,
+    };
+  }
+
+  function syntaxHighlight(obj) {
+    const json = JSON.stringify(obj, null, 2);
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) return `<span class="json-key">${match}</span>`;
+        return `<span class="json-str">${match}</span>`;
+      }
+      if (/true|false/.test(match)) return `<span class="json-bool">${match}</span>`;
+      return `<span class="json-num">${match}</span>`;
+    });
+  }
+
+  async function runPredict() {
+    const base = document.getElementById('baseUrl').value.replace(/\/$/, '');
+    const url  = `${base}/predict`;
+    const payload = getPayload();
+
+    // Show loading
+    document.getElementById('resultIdle').style.display    = 'none';
+    document.getElementById('resultVerdict').style.display = 'none';
+    document.getElementById('resultLoading').style.display = 'block';
+    document.getElementById('predictBtn').disabled = true;
+
+    // Update request + curl tabs immediately
+    document.getElementById('requestBodyView').innerHTML = syntaxHighlight(payload);
+    document.getElementById('curlView').textContent =
+      `curl -X POST ${url} \\\n  -H "Content-Type: application/json" \\\n  -d '${JSON.stringify(payload, null, 2)}'`;
+
+    const dot  = document.getElementById('statusDot');
+    const txt  = document.getElementById('statusText');
+    const body = document.getElementById('responseBody');
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      dot.className  = res.ok ? 'status-dot ok' : 'status-dot err';
+      txt.textContent = `${res.status} ${res.statusText}`;
+      body.innerHTML  = syntaxHighlight(data);
+
+      if (res.ok && 'churned' in data) {
+        const churned = data.churned;
+        const prob    = data.churn_probability;
+
+        document.getElementById('resultLoading').style.display = 'none';
+        const verdict = document.getElementById('resultVerdict');
+        verdict.style.display = 'block';
+
+        const vv = document.getElementById('verdictValue');
+        vv.textContent = churned ? 'CHURNED' : 'RETAINED';
+        vv.className   = `verdict-value ${churned ? 'churn' : 'retain'}`;
+
+        const fill = document.getElementById('probBarFill');
+        fill.className = `prob-bar-fill ${churned ? 'churn' : 'retain'}`;
+        setTimeout(() => { fill.style.width = `${(prob * 100).toFixed(1)}%`; }, 30);
+
+        document.getElementById('probPct').textContent = `Churn probability: ${(prob * 100).toFixed(1)}%`;
+      } else {
+        document.getElementById('resultLoading').style.display = 'none';
+        document.getElementById('resultIdle').style.display    = 'block';
+      }
+
+    } catch (err) {
+      document.getElementById('resultLoading').style.display = 'none';
+      document.getElementById('resultIdle').style.display    = 'block';
+      dot.className   = 'status-dot err';
+      txt.textContent = 'Connection failed';
+      body.innerHTML  = `<div class="error-box">Could not reach ${url}\n\n${err.message}\n\nMake sure your API is running:\n  docker-compose up --build</div>`;
+    }
+
+    document.getElementById('predictBtn').disabled = false;
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      const names = ['response','request','curl'];
+      t.classList.toggle('active', names[i] === name);
+    });
+    document.querySelectorAll('.tab-pane').forEach(p => {
+      p.classList.toggle('active', p.id === `tab-${name}`);
+    });
+  }
+
+  function resetForm() {
+    document.getElementById('spend_per_cart').value       = '45.0';
+    document.getElementById('items_per_cart').value       = '2.5';
+    document.getElementById('quantity_per_item').value    = '1.2';
+    document.getElementById('avg_items_per_cart').value   = '2.5';
+    document.getElementById('cart_frequency_score').value = '0.3';
+    document.getElementById('engagement_trend').value     = '1.2';
+    setFlag('is_low_spender', 0);
+    setFlag('is_one_time_buyer', 0);
+    setFlag('is_senior', 0);
+    setFlag('is_young', 0);
+    document.getElementById('resultIdle').style.display    = 'block';
+    document.getElementById('resultVerdict').style.display = 'none';
+    document.getElementById('statusDot').className  = 'status-dot';
+    document.getElementById('statusText').textContent = 'No request sent yet';
+    document.getElementById('responseBody').innerHTML = '{ }';
+    document.getElementById('requestBodyView').innerHTML = '{ }';
+    document.getElementById('curlView').textContent = '—';
+  }
+
+  function setFlag(field, val) {
+    flags[field] = val;
+    document.querySelectorAll(`[data-field="${field}"] .toggle-btn`).forEach(b => {
+      b.className = parseInt(b.dataset.val) === val ? `toggle-btn active-${val}` : 'toggle-btn';
+    });
+  }
+
+  const PRESETS = {
+    likely_retain: { spend_per_cart:120, items_per_cart:4.5, quantity_per_item:2.1, avg_items_per_cart:4.5, cart_frequency_score:0.8, engagement_trend:2.3, is_low_spender:0, is_one_time_buyer:0, is_senior:0, is_young:0 },
+    at_risk:       { spend_per_cart:18,  items_per_cart:1.2, quantity_per_item:1.0, avg_items_per_cart:1.2, cart_frequency_score:0.1, engagement_trend:0.5, is_low_spender:1, is_one_time_buyer:1, is_senior:0, is_young:0 },
+    one_time:      { spend_per_cart:22,  items_per_cart:1.0, quantity_per_item:1.0, avg_items_per_cart:1.0, cart_frequency_score:0.1, engagement_trend:1.0, is_low_spender:1, is_one_time_buyer:1, is_senior:0, is_young:1 },
+    high_value:    { spend_per_cart:280, items_per_cart:7.0, quantity_per_item:2.8, avg_items_per_cart:7.0, cart_frequency_score:1.4, engagement_trend:3.1, is_low_spender:0, is_one_time_buyer:0, is_senior:1, is_young:0 },
+  };
+
+  function loadPreset(name) {
+    const p = PRESETS[name];
+    if (!p) return;
+    document.getElementById('spend_per_cart').value       = p.spend_per_cart;
+    document.getElementById('items_per_cart').value       = p.items_per_cart;
+    document.getElementById('quantity_per_item').value    = p.quantity_per_item;
+    document.getElementById('avg_items_per_cart').value   = p.avg_items_per_cart;
+    document.getElementById('cart_frequency_score').value = p.cart_frequency_score;
+    document.getElementById('engagement_trend').value     = p.engagement_trend;
+    setFlag('is_low_spender', p.is_low_spender);
+    setFlag('is_one_time_buyer', p.is_one_time_buyer);
+    setFlag('is_senior', p.is_senior);
+    setFlag('is_young', p.is_young);
+  }
+</script>
+
+</body>
+</html>
